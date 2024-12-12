@@ -49,7 +49,8 @@ class RestaurantPortal {
     }
 
     private function viewReservations() {
-        $reservations = $this->db->findReservations($_GET['customerId'] ?? null);
+        $customerId = $_GET['customerId'] ?? null;
+        $reservations = $this->db->findReservations($customerId);
         include 'templates/viewReservations.php';
     }
 
