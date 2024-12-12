@@ -14,7 +14,7 @@ class RestaurantDatabase {
     private function connect() {
         $this->connection = new mysqli($this->host, $this->user, $this->password, $this->database, $this->port);
         if ($this->connection->connect_error) {
-            die("Connection failed: " . $this->connection->connect_error);
+            die("Database connection failed: " . $this->connection->connect_error);
         }
     }
 
@@ -27,11 +27,17 @@ class RestaurantDatabase {
         $stmt->close();
     }
 
-    public function findReservations($customerId) {
-        $stmt = $this->connection->prepare(
-            "SELECT reservationId, reservationTime, numberOfGuests, specialRequests FROM Reservations WHERE customerId = ?"
-        );
-        $stmt->bind_param("i", $customerId);
+    public function findReservations($customerId = null) {
+        if ($customerId) {
+            $stmt = $this->connection->prepare(
+                "SELECT reservationId, customerId, reservationTime, numberOfGuests, specialRequests FROM Reservations WHERE customerId = ?"
+            );
+            $stmt->bind_param("i", $customerId);
+        } else {
+            $stmt = $this->connection->prepare(
+                "SELECT reservationId, customerId, reservationTime, numberOfGuests, specialRequests FROM Reservations"
+            );
+        }
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
